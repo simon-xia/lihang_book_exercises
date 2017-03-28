@@ -58,7 +58,7 @@ func csvHeder(strs []string) string {
 
 // border etc to be process
 func htmlHeader(strs []string) string {
-	return headerGen("<tr><th>", "</tr>\n", "</th><th>", strs)
+	return headerGen("<tr><th>", "</th></tr>\n", "</th><th>", strs)
 }
 
 /*
@@ -93,6 +93,7 @@ func (t *Table) readerHtmlOneRow(row []interface{}) string {
 		cf, ok := t.colfmt[t.structMeta[i]]
 		if ok {
 			// TODO align
+			// if cf.f != nil
 			buf.WriteString(fmt.Sprintf(">%s", cf.f(r)))
 		} else {
 			buf.WriteString(fmt.Sprintf(">%v", r))
@@ -136,14 +137,19 @@ type Table struct {
 	tabfmt     TabFmt
 	colfmt     map[string]ColFmt
 	structMeta map[int]string
+	structType reflect.Type
 	//TODO header fmt
 
 	Data       [][]interface{}
 	table      []row
 	stringData [][]string
-	structType reflect.Type
 	// mode
 	// buildFromData bool
+}
+
+// map: fieldname -> fmt
+func (t *Table) AddFormat(colfmt map[string]ColFmt) {
+	t.colfmt = colfmt
 }
 
 func (t *Table) AddHeader(header []string) {
@@ -194,9 +200,9 @@ func NewTableFromStructs(d interface{}) *Table {
 	table := make([][]interface{}, 0, v.Len())
 	for i := 0; i < v.Len(); i++ {
 		vv := v.Index(i)
-		row := make([]interface{}, vv.NumField())
+		row := make([]interface{}, len(structMeta))
 		for i, name := range structMeta {
-			row[i] = vv.FieldByName(name)
+			row[i] = vv.FieldByName(name).Interface()
 		}
 		table = append(table, row)
 	}
@@ -252,9 +258,9 @@ func (t *Table) InsertData(idx int, data ...interface{}) (err error) {
 		}
 
 		v := reflect.ValueOf(d)
-		row := make([]interface{}, v.NumField())
-		for j := 0; j < v.NumField(); j++ {
-			row[j] = v.Field(j)
+		row := make([]interface{}, len(t.structMeta))
+		for i, name := range t.structMeta {
+			row[i] = v.FieldByName(name).Interface()
 		}
 		rows[i] = row
 	}

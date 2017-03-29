@@ -148,8 +148,14 @@ type Table struct {
 }
 
 // map: fieldname -> fmt
-func (t *Table) AddFormat(colfmt map[string]ColFmt) {
+func (t *Table) AddFormat(colfmt map[string]ColFmt) (err error) {
+	/*
+		for s, c := range colfmt {
+
+		}
+	*/
 	t.colfmt = colfmt
+	return
 }
 
 func (t *Table) AddHeader(header []string) {

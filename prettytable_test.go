@@ -5,17 +5,23 @@ import (
 	"testing"
 )
 
+const unit_format = "%.3f %s"
+
 type testStruct struct {
 	Field1 string
-	Field2 int `table:"fuck"`
-	field3 float64
+	Field2 int     `table:"fuck"`
+	Field3 float64 `table:"f"`
+}
+
+func float64Fmt(v interface{}) string {
+	return fmt.Sprintf("%.3f", v)
 }
 
 func TestNew(t *testing.T) {
 
 	data := []testStruct{
-		{"haha", 1, 3.14},
-		{"wwww", 2, 8.14},
+		{"haha", 12314124, 3.143241123412},
+		{"wwww", 2, 8.144234525},
 		{"oooo", 3, 9.14},
 	}
 
@@ -29,6 +35,12 @@ func TestNew(t *testing.T) {
 
 	table.String()
 
+	table.AddFormat(map[string]ColFmt{
+		"field3": ColFmt{
+			Func: float64Fmt,
+		},
+	})
 	table.AddTitle("title")
 	fmt.Println(table.HtmlTable())
+	fmt.Printf("%+v", table)
 }

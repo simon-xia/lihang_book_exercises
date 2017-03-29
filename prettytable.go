@@ -94,7 +94,7 @@ func (t *Table) readerHtmlOneRow(row []interface{}) string {
 		if ok {
 			// TODO align
 			// if cf.f != nil
-			buf.WriteString(fmt.Sprintf(">%s", cf.f(r)))
+			buf.WriteString(fmt.Sprintf(">%s", cf.Func(r)))
 		} else {
 			buf.WriteString(fmt.Sprintf(">%v", r))
 		}
@@ -128,7 +128,7 @@ type TabFmt struct {
 type ColFmt struct {
 	TabFmt
 	// %.3f => %s, fmt.Sprintf("%.3f", f)
-	f ColFmtFunc // default use %+v
+	Func ColFmtFunc // default use %+v
 }
 
 type Table struct {
@@ -237,6 +237,11 @@ func (t *Table) String() {
 		}
 		fmt.Println()
 	}
+}
+
+// TODO
+func (t *Table) Sort(field ...string) {
+
 }
 
 func (t *Table) AppendData(data ...interface{}) (err error) {
